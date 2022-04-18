@@ -1,51 +1,49 @@
 import search
+import chickenWolf
+import sys
 
-def isValidState(state):
-    if state == None:
-        return False
-    left = state[0]
-    right = state[1]
-    if left[0] < 0 or left[1] < 0 or right[0] < 0 or right[1] < 0:
-        return False
-    elif left[2] < 0 or left[2] > 1 or right[2] < 0 or right[2] > 1:
-        return False
-    else:
-        return (left[0] > 0 or left[0] >= left[1]) and (right[0] > 0 or right[0] >= right[1])
+def main(args):
 
-def alterState(state, action):
-    left = [state[0][0], state[0][1], -1 if state[0][2] == 1 else 1]
-    right = [state[1][0], state[1][1], -1 if state[1][2] == 1 else 1]
-    if action == 0:
-        left[0] += 1 * left[2]
-        right[0] += 1 * right[2]
-    elif action == 1:
-        left[0] += 2 * left[2]
-        right[0] += 2 * right[2]
-    elif action == 2:
-        left[1] += 1 * left[2]
-        right[1] += 1 * right[2]
-    elif action == 3:
-        left[1] += 2 * left[2]
-        right[1] += 2 * right[2]
-    elif action == 4:
-        left[0] += 1 * left[2]
-        right[0] += 1 * right[2]
-        left[1] += 1 * left[2]
-        right[1] += 1 * right[2]
-    newState = [[left[0], left[1], 1 if left[2] == 1 else 0], [right[0], right[1], 1 if right[2] == 1 else 0]]
-    return newState
+    if len(args) < 4:
+        print("ERROR: not enough arguments.")
+        return
 
-def expand(state):
-    nextNodes = []
-    for i in range(0, 5):
-        newState = alterState(state, i)
-        if isValidState(newState):
-            nextNodes.append(newState)
-    return nextNodes
+    f = open(args[0], "r")
+    left = f.readline()[:-1].split(",")
+    right = f.readline()[:-1].split(",")
+    left = list(map(lambda s: int(s), left))
+    right = list(map(lambda s: int(s), right))
+    start = [left, right]
+    f.close()
+    f = open(args[1], "r")
+    left = f.readline()[:-1].split(",")
+    right = f.readline()[:-1].split(",")
+    left = list(map(lambda s: int(s), left))
+    right = list(map(lambda s: int(s), right))
+    goal = [left, right]
+    f.close()
 
-start = [[11, 7, 1], [0, 0, 0]]
-goal = [[0, 0, 0], [11, 7, 1]]
-path = search.iddfs(start, goal, expand)
-if not path == None:
-    for node in path:
-        print(node)
+    path = []
+    if args[2] == "bfs":
+        path = search.bfs(start, goal, chickenWolf.expand)
+    elif args[2] == "dfs" :
+        path = search.dfs(start, goal, chickenWolf.expand)
+    elif args[2] == "iddfs":
+        path = search.iddfs(start, goal, chickenWolf.expand)
+    elif args[2] == "astar":
+        path = search.aStar(start, goal, chickenWolf.expand, chickenWolf.h)
+
+    if path == None:
+        print("ERROR: no solution found.")
+        return
+    
+    f = open(args[3], "w")
+    f.write(str(len(path[1]) - 1) + " steps to goal.\n")
+    f.write(str(path[0]) + " nodes explored.\n")
+    f.writelines(map(lambda x : str(x) + "\n", path[1]))
+    f.close()
+
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    main(args)
