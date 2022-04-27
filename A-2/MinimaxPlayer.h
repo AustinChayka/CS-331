@@ -44,6 +44,10 @@ public:
 
 private:
 
+	std::vector<std::pair<int, int>> sucessors(OthelloBoard& b, char s);
+	int utility(OthelloBoard& b);
+	int minValue(OthelloBoard& b);
+	int maxValue(OthelloBoard& b);
 
 };
 
