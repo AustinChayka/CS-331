@@ -1,0 +1,4 @@
+Accuracy on training data: ~95.992%
+Accuracy on test data: ~76.459%
+*trainingSet.txt was used for model training and training data accuracy, testSet.txt was used for test accuracy
+*The code for the pre-processing steps are in preProc.py, and the code for the classification steps are in bays.py
